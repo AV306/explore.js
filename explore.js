@@ -599,6 +599,8 @@ var moonImg;
 
 const lineWidth = 5;
 
+var autoScrollCheckbox;
+
 var font;
 function preload()
 {
@@ -630,6 +632,8 @@ function setup()
   textAlign( LEFT, TOP );
   textFont( font );
   textSize( 20 );
+  
+  autoScrollCheckbox = createCheckbox( "Auto scroll", true );
 }
 
 var dt;
@@ -648,7 +652,8 @@ function draw()
 //  if ( keyIsDown( /* D */ 68 ) ) world.worldX += moveSpeed * dt;
   
   // Autoscroll
-  world.worldX += Math.floor(100 * dt);
+  if ( autoScrollCheckbox.checked() )
+    world.worldX += Math.floor(100 * dt);
   
   // FPS monitor
   push();
