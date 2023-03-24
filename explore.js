@@ -74,7 +74,7 @@ class Skybox // TODO
       {
         let d = clamp(
           0, 1,
-          c.subScalar( x, y ).magnitude() / (tex.width/2)
+          c.subScalars( x, y ).magnitude() / (tex.width/2)
         ) ** 2;
         
         let alpha = Math.floor( smoothstep( 255, 0, d ) );
