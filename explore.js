@@ -44,7 +44,7 @@ class Skybox // TODO
    */
   
   static doDayNightCycle = false;
-  morningColor = color( "#f5d556" ); // This has the side effect of looking like SCP-001 "When Day Breaks"
+  morningColor = color( "#f5d556" ); // This has the side effect of looking like SCP-001 (When Day Breaks)
   dayColor = color( "#9ce9ff" );
   eveningColor = color( "##f55685" );
   nightColor = color( "#262b40" );
@@ -74,7 +74,7 @@ class Skybox // TODO
       {
         let d = clamp(
           0, 1,
-          c.subScalars( x, y ).magnitude() / (tex.width/2)
+          c.subScalar( x, y ).magnitude() / (tex.width/2)
         ) ** 2;
         
         let alpha = Math.floor( smoothstep( 255, 0, d ) );
@@ -283,14 +283,15 @@ class Skybox // TODO
   render()
   { 
     if ( Skybox.doDayNightCycle )
+    {
       background( this.getSkyColor() );
+      this.renderSunMoon();
+    }
     else background( this.dayColor );
 
     
     if ( Skybox.cloudMode > 0 )
       this.renderClouds( Skybox.cloudMode );
-    
-    this.renderSunMoon();
     
     this.time += 30 * dt;
     this.time = wrap( 0, 359, this.time );
@@ -390,7 +391,7 @@ class Chunk // Chunk!
       // Get last stone and grass heights of next chunk
       let targetChunk = world.chunks.get( this.index + 1 );
       
-      if ( !alwaysBlend && targetChunk.biome == this.biome ) return;
+      if ( !blendChunksCheckbox.checked() && targetChunk.biome == this.biome ) return;
       
       let targetStoneHeight = targetChunk._stoneHeights[0];
       let targetGrassHeight = targetChunk._grassHeights[0];
@@ -423,7 +424,7 @@ class Chunk // Chunk!
       // Get last stone and grass heights of previous chunk
       let targetChunk = world.chunks.get( this.index - 1 );
       
-      if ( !alwaysBlend && targetChunk.biome == this.biome ) return;
+      if ( !blendChunksCheckbox.checked() && targetChunk.biome == this.biome ) return;
       
       let targetStoneHeight = targetChunk._stoneHeights[this.#size - 1];
       let targetGrassHeight = targetChunk._grassHeights[this.#size - 1];
@@ -588,8 +589,6 @@ const h = 500;
 const halfW = w/2;
 const halfH = h/2;
 
-const alwaysBlend = true;
-
 const moveSpeed = 10; // Px/s
 
 var world;
@@ -600,6 +599,9 @@ var moonImg;
 const lineWidth = 5;
 
 var autoScrollCheckbox;
+var blendChunksCheckbox;
+var cloudModeSlider;
+var dayNightCycleCheckbox;
 
 var font;
 function preload()
@@ -634,6 +636,9 @@ function setup()
   textSize( 20 );
   
   autoScrollCheckbox = createCheckbox( "Auto scroll", true );
+  blendChunksCheckbox = createCheckbox( "Blend chunk heights (requires regeneration)", true );
+  cloudModeSlider = createSlider( 0, 3, 2, 1 );
+  dayNightCycleCheckbox = createCheckbox( "Day/night cycle", false )
 }
 
 var dt;
@@ -642,6 +647,8 @@ function draw()
   dt = deltaTime / 1000;
   
   clear();
+  Skybox.cloudMode = cloudModeSlider.value();
+  Skybox.doDayNightCycle = dayNightCycleCheckbox.checked();
   skybox.render();
   
   // Render world  
